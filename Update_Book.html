@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><title>Edit Book Details</title>
+<script>
+    if (localStorage.getItem("userRole") !== "admin") {
+        alert("Access Denied: Only admins can modify data items!");
+        window.location.href = "index.html";
+    }
+</script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',sans-serif; }
+body { min-height:100vh; display:flex; justify-content:center; align-items:center; padding:20px; background:linear-gradient(135deg,#141e30,#243b55); }
+.wrapper { width:100%; max-width:600px; background:rgba(255,255,255,0.12); backdrop-filter:blur(14px); border-radius:16px; padding:30px; box-shadow:0 10px 25px rgba(0,0,0,0.4); opacity:0; transform:translateY(40px); transition:0.6s ease; }
+.wrapper.active { opacity:1; transform:translateY(0); }
+h1 { text-align:center; color:white; margin-bottom:20px; font-size:26px; }
+form { display:flex; flex-direction:column; gap:12px; }
+input { padding:12px; border:none; outline:none; border-radius:8px; font-size:15px; }
+button { padding:12px; border:none; border-radius:8px; background:#00c853; color:white; font-size:16px; font-weight:bold; cursor:pointer; }
+.back-btn { text-align:center; margin-top:15px; }
+.back-btn a { color:white; text-decoration:none; font-size:15px; }
+</style>
+</head>
+<body>
+<div class="wrapper" id="formBox">
+    <h1>📖 Edit Book Registry</h1>
+    <form id="updateBookForm">
+        <input type="number" id="u_id" placeholder="Book ID to Update" required>
+        <input type="text" id="u_title" placeholder="New Book Title" required>
+        <input type="text" id="u_author" placeholder="New Author Name" required>
+        <input type="text" id="u_genre" placeholder="Genre">
+        <input type="number" id="u_year" placeholder="Year of Publication">
+        <input type="number" id="u_quantity" placeholder="Quantity">
+        <input type="text" id="u_description" placeholder="Description">
+        <input type="text" id="u_publisher" placeholder="Publisher">
+        <button type="submit">💾 Save Changes</button>
+    </form>
+    <div class="back-btn"><a href="Book_Management.html">← Cancel and Return</a></div>
+</div>
+<script>
+window.onload = function(){
+    document.getElementById("formBox").classList.add("active");
+    const urlParams = new URLSearchParams(window.location.search);
+    const bookId = urlParams.get('id');
+    if(bookId) {
+        document.getElementById("u_id").value = bookId;
+        const books = JSON.parse(localStorage.getItem("books") || "[]");
+        const book = books.find(b => b.id == bookId);
+        if(book) {
+            document.getElementById("u_title").value = book.title;
+            document.getElementById("u_author").value = book.author;
+            document.getElementById("u_genre").value = book.genre || '';
+            document.getElementById("u_year").value = book.year || '';
+            document.getElementById("u_quantity").value = book.quantity || '';
+            document.getElementById("u_description").value = book.description || '';
+            document.getElementById("u_publisher").value = book.publisher || '';
+        }
+    }
+};
+
+document.getElementById("updateBookForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const targetId = parseInt(document.getElementById("u_id").value);
+    let books = JSON.parse(localStorage.getItem("books") || "[]");
+    const index = books.findIndex(b => b.id === targetId);
+    if(index !== -1) {
+        books[index] = {
+            id: targetId,
+            title: document.getElementById("u_title").value,
+            author: document.getElementById("u_author").value,
+            genre: document.getElementById("m_genre").value, // fixed mapping alignment
+            year: document.getElementById("u_year").value,
+            quantity: document.getElementById("u_quantity").value,
+            description: document.getElementById("u_description").value,
+            publisher: document.getElementById("u_publisher").value
+        };
+        localStorage.setItem("books", JSON.stringify(books));
+        alert("Changes saved successfully!");
+        window.location.href = "Book_Management.html";
+    } else { alert("Book ID not found!"); }
+});
+</script>
+</body>
+</html>

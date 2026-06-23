@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><title>Book Inventory</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',sans-serif; }
+body { min-height:100vh; padding:30px; background:linear-gradient(135deg,#141e30,#243b55); color:white; }
+h1 { text-align:center; margin-bottom:10px; font-size:32px; }
+.welcome-banner { text-align:center; margin-bottom:25px; color:#ffd59e; font-size:18px; font-style:italic; }
+.form-box { background:rgba(255,255,255,0.1); backdrop-filter:blur(12px); border-radius:15px; padding:25px; margin-bottom:30px; }
+.form-box h3 { margin-bottom:15px; }
+.form-layout { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:15px; }
+.form-layout input { padding:10px; border:none; border-radius:8px; outline:none; }
+button { margin-top:15px; padding:10px 18px; background:#00c853; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold; }
+.table-box { background:rgba(255,255,255,0.1); backdrop-filter:blur(12px); border-radius:15px; padding:15px; overflow-x:auto; }
+table { width:100%; border-collapse:collapse; }
+th, td { padding:12px; border-bottom:1px solid rgba(255,255,255,0.2); text-align:center; }
+th { background:rgba(255,255,255,0.15); }
+.edit-btn { background:#2979ff; color:white; padding:7px 12px; text-decoration:none; border-radius:6px; margin-right:5px; }
+.delete-btn { background:#ff5252; color:white; padding:7px 12px; border:none; border-radius:6px; cursor:pointer; }
+.back-btn { display:inline-block; margin-top:20px; text-decoration:none; background:white; color:#243b55; padding:10px 18px; border-radius:8px; font-weight:bold; margin-right:10px; }
+.logout-btn { display:inline-block; margin-top:20px; text-decoration:none; background:#ff5252; color:white; padding:10px 18px; border-radius:8px; font-weight:bold; }
+</style>
+</head>
+<body>
+<h1 id="pageTitle">📚 Book Catalog Directory</h1>
+<div class="welcome-banner" id="welcomeUser">Welcome to the Library Catalog!</div>
+
+<div class="form-box" id="adminAddFormBox">
+    <h3>Add New Book Asset</h3>
+    <form id="manageBooksForm">
+        <div class="form-layout">
+            <input type="text" id="m_title" placeholder="Book Title" required>
+            <input type="text" id="m_author" placeholder="Author" required>
+            <input type="text" id="m_genre" placeholder="Genre">
+            <input type="number" id="m_year" placeholder="Year">
+            <input type="number" id="m_quantity" placeholder="Quantity">
+            <input type="text" id="m_description" placeholder="Description">
+            <input type="text" id="m_publisher" placeholder="Publisher">
+        </div>
+        <button type="submit">➕ Add Book</button>
+    </form>
+</div>
+
+<div class="table-box">
+    <table>
+        <thead>
+            <tr><th>ID</th><th>Title</th><th>Author</th><th>Genre</th><th>Year</th><th>Quantity</th><th>Description</th><th>Publisher</th><th id="actionTableHeader">Action Menu</th></tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<a href="admin_role.html" id="backToDashBtn" class="back-btn">← Back to Admin Control</a>
+<a href="index.html" class="logout-btn">Logout Exit</a>
+
+<script>
+const defaultBooks = [{ id: 1, title: "Python Programming", author: "Guido Rossum", genre: "Programming", year: 2024, quantity: 10, description: "Basics of Python", publisher: "O'Reilly" }];
+const isAdmin = localStorage.getItem("userRole") === "admin";
+
+function loadBooks() {
+    if(!localStorage.getItem("books")) {
+        localStorage.setItem("books", JSON.stringify(defaultBooks));
+        localStorage.setItem("nextId", "2");
+    }
+    
+    if (!isAdmin) {
+        document.getElementById("adminAddFormBox").style.display = "none";
+        document.getElementById("actionTableHeader").style.display = "none";
+        document.getElementById("backToDashBtn").style.display = "none";
+        document.getElementById("pageTitle").innerText = "📖 Student Library Search";
+        
+        const customerName = localStorage.getItem("currentUserName") || "User";
+        document.getElementById("welcomeUser").innerText = "Hello " + customerName + ", view available books in inventory below:";
+    } else {
+        document.getElementById("welcomeUser").innerText = "Admin Portal Control View Active";
+    }
+
+    const books = JSON.parse(localStorage.getItem("books"));
+    const tbody = document.querySelector("table tbody");
+    tbody.innerHTML = "";
+    
+    books.forEach(book => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${book.id}</td>
+            <td>${book.title}</td>
+            <td>${book.author}</td>
+            <td>${book.genre || 'N/A'}</td>
+            <td>${book.year || 'N/A'}</td>
+            <td>${book.quantity || 1}</td>
+            <td>${book.description || ''}</td>
+            <td>${book.publisher || 'N/A'}</td>
+            ${isAdmin ? `<td>
+                <a href="Update_Book.html?id=${book.id}" class="edit-btn">Edit</a>
+                <button class="delete-btn" onclick="deleteBook(${book.id})">Delete</button>
+            </td>` : ''}
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+document.getElementById("manageBooksForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    let books = JSON.parse(localStorage.getItem("books") || "[]");
+    let nextId = parseInt(localStorage.getItem("nextId") || "2");
+    
+    books.push({
+        id: nextId,
+        title: document.getElementById("m_title").value,
+        author: document.getElementById("m_author").value,
+        genre: document.getElementById("m_genre").value,
+        year: document.getElementById("m_year").value,
+        quantity: document.getElementById("m_quantity").value,
+        description: document.getElementById("m_description").value,
+        publisher: document.getElementById("m_publisher").value
+    });
+    
+    localStorage.setItem("books", JSON.stringify(books));
+    localStorage.setItem("nextId", (nextId + 1).toString());
+    this.reset();
+    loadBooks();
+});
+
+function deleteBook(id) {
+    if(confirm("Delete Book ID: " + id + "?")) {
+        let books = JSON.parse(localStorage.getItem("books") || "[]");
+        books = books.filter(b => b.id !== id);
+        localStorage.setItem("books", JSON.stringify(books));
+        loadBooks();
+    }
+}
+window.addEventListener("load", loadBooks);
+</script>
+</body>
+</html>

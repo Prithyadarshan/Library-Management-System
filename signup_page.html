@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><title>Signup</title>
+<style>
+body { margin: 0; height: 100vh; display: flex; justify-content: center; align-items: center; background: linear-gradient(135deg, #1e3c72, #2a5298, #6dd5ed); font-family: Arial, sans-serif; overflow: hidden; opacity: 0; transform: scale(1.05); transition: 0.8s ease; }
+body.show { opacity: 1; transform: scale(1); }
+#container-form { width: 400px; background: rgba(255,255,255,0.95); border-radius: 14px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); opacity: 0; transform: translateY(40px); transition: 0.6s ease; }
+#container-form.active { opacity: 1; transform: translateY(0); }
+h2 { text-align: center; margin-bottom: 15px; }
+label { font-size: 14px; }
+input, textarea { width: 100%; padding: 8px; margin-top: 5px; margin-bottom: 10px; border-radius: 6px; border: 1px solid #ccc; outline: none; box-sizing: border-box; }
+input[type="submit"] { background: #2a5298; color: white; border: none; cursor: pointer; padding: 10px; font-weight: bold; }
+.login-link { text-align: center; margin-top: 10px; font-size: 14px; }
+</style>
+</head>
+<body>
+<div id="container-form">
+    <h2>Registration Form</h2>
+    <form id="signupForm">
+        <label>First Name</label><input type="text" id="fname" required placeholder="First Name">
+        <label>Last Name</label><input type="text" id="lname" required placeholder="Last Name">
+        <label>Email</label><input type="email" id="email" required placeholder="abc@gmail.com">
+        <label>Password</label><input type="password" id="pwd" required placeholder="******">
+        <label>Confirm Password</label><input type="password" id="cpwd" required placeholder="******">
+        <label>Mobile No</label><input type="text" id="phone" required placeholder="1234567890">
+        <label>Address</label><textarea id="address" required placeholder="Address" rows="2"></textarea>
+        <input type="submit" value="Register">
+        <div class="login-link">Already have an account? <a href="index.html">Login</a></div>
+    </form>
+</div>
+<script>
+window.addEventListener("load", function () {
+    setTimeout(function () { document.body.classList.add("show"); document.getElementById("container-form").classList.add("active"); }, 150);
+});
+
+document.getElementById("signupForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    let pass = document.getElementById("pwd").value;
+    let cpass = document.getElementById("cpwd").value;
+    let phone = document.getElementById("phone").value.trim();
+    let email = document.getElementById("email").value.trim();
+
+    if(pass.length < 6) { alert("Password must be at least 6 characters"); return; }
+    if(cpass !== pass) { alert("Passwords do not match"); return; }
+    if(!/^\d{10}$/.test(phone)) { alert("Enter valid 10 digit number"); return; }
+
+    let users = JSON.parse(localStorage.getItem("users") || "[]");
+    if(users.some(u => u.email === email)) { alert("Email already registered!"); return; }
+
+    users.push({
+        firstname: document.getElementById("fname").value,
+        lastname: document.getElementById("lname").value,
+        email: email,
+        password: pass,
+        phone: phone,
+        address: document.getElementById("address").value
+    });
+    
+    localStorage.setItem("users", JSON.stringify(users));
+    alert("Registration Successful!");
+    window.location.href = "index.html";
+});
+</script>
+</body>
+</html>

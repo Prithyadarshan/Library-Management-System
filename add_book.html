@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><title>Library Management System - Add Book</title>
+<script>
+    if (localStorage.getItem("userRole") !== "admin") {
+        alert("Access Denied: Only administrators can add books via this panel!");
+        window.location.href = "index.html";
+    }
+</script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:Arial, sans-serif; }
+body { min-height:100vh; display:flex; justify-content:center; align-items:center; background:linear-gradient(135deg,#0f2027,#203a43,#2c5364); }
+.main-box { width:100%; max-width:450px; background:rgba(255,255,255,0.95); padding:25px; border-radius:15px; box-shadow:0px 10px 25px rgba(0,0,0,0.4); opacity:0; transform:translateY(-20px); transition:0.6s ease; }
+.main-box.show { opacity:1; transform:translateY(0); }
+h1 { text-align:center; margin-bottom:20px; padding:10px; border-radius:10px; background:#ffd59e; color:#333; font-size:24px; }
+label { display:block; margin-top:12px; font-weight:bold; font-size:14px; }
+input[type="text"] { width:100%; padding:10px; margin-top:6px; border-radius:6px; border:1px solid #ccc; outline:none; }
+.radio-box { margin-top:10px; margin-bottom:18px; }
+.radio-box label { display:block; font-weight:normal; margin-bottom:8px; }
+button[type="submit"] { width:100%; padding:12px; background:#2c5364; color:white; border:none; border-radius:6px; cursor:pointer; font-size:15px; font-weight:bold; }
+.dash-btn { display:block; text-align:center; margin-top:15px; padding:10px; text-decoration:none; color:white; background:#4a6cf7; font-weight:bold; border-radius:6px; transition:0.3s; }
+.logout-btn { display:block; text-align:center; margin-top:10px; padding:10px; text-decoration:none; color:white; background:#ff5252; font-weight:bold; border-radius:6px; }
+</style>
+</head>
+<body>
+<div class="main-box" id="box">
+    <h1>📚 Add New Book</h1>
+    <form id="addBookForm">
+        <label>Username</label><input type="text" id="username" placeholder="Enter Username" required>
+        <label>Book Name</label><input type="text" id="bookname" placeholder="Enter Book Name" required>
+        <label>Book Category</label>
+        <div class="radio-box">
+            <label><input type="radio" name="category" value="Fiction" required checked> Fiction</label>
+            <label><input type="radio" name="category" value="Programming"> Programming</label>
+            <label><input type="radio" name="category" value="Aptitude & Reasoning"> Aptitude & Reasoning</label>
+            <label><input type="radio" name="category" value="Comic"> Comic</label>
+        </div>
+        <button type="submit">Add Book</button>
+    </form>
+    <a href="admin_role.html" class="dash-btn">Go to Admin Dashboard →</a>
+    <a href="index.html" class="logout-btn">Logout</a>
+</div>
+<script>
+window.onload = function(){ document.getElementById("box").classList.add("show"); };
+
+document.getElementById("addBookForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    let books = JSON.parse(localStorage.getItem("books") || "[]");
+    let nextId = parseInt(localStorage.getItem("nextId") || "2");
+    
+    books.push({
+        id: nextId,
+        title: document.getElementById("bookname").value,
+        author: "Assigned by " + document.getElementById("username").value,
+        genre: document.querySelector('input[name="category"]:checked').value,
+        year: new Date().getFullYear(),
+        quantity: 1,
+        description: "Quick add panel asset",
+        publisher: "Internal Library"
+    });
+    
+    localStorage.setItem("books", JSON.stringify(books));
+    localStorage.setItem("nextId", (nextId + 1).toString());
+    window.location.href = "Book_Management.html";
+});
+</script>
+</body>
+</html>

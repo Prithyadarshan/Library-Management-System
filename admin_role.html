@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><title>Admin Dashboard | Library System</title>
+<script>
+    if (localStorage.getItem("userRole") !== "admin") {
+        alert("Access Denied: You do not have permission to view Admin Controls!");
+        window.location.href = "index.html";
+    }
+</script>
+<style>
+:root{ --primary:#1f2a44; --secondary:#2c3e50; --accent:#4a6cf7; --text:#333; }
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',sans-serif; }
+body { display:flex; min-height:100vh; background:#f4f6f9; }
+.sidebar { width:240px; background:var(--primary); color:white; position:fixed; height:100%; padding:20px; }
+.sidebar h2 { text-align:center; margin-bottom:30px; }
+.sidebar a { display:block; color:white; text-decoration:none; padding:12px; margin:8px 0; border-radius:6px; transition:0.3s; }
+.sidebar a:hover { background:var(--secondary); }
+.main { margin-left:240px; width:100%; padding:25px; }
+.header { background:white; padding:15px 20px; border-radius:10px; margin-bottom:20px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:20px; }
+.card { background:white; padding:25px; border-radius:12px; text-align:center; box-shadow:0 2px 10px rgba(0,0,0,0.08); transition:0.3s; }
+.card:hover { transform:translateY(-6px); }
+.card h3 { color:var(--text); margin-bottom:15px; }
+.card a { text-decoration:none; background:var(--accent); color:white; padding:10px 20px; border-radius:8px; display:inline-block; }
+.footer { margin-top:30px; text-align:center; color:#777; font-size:13px; }
+@media(max-width:768px){ .sidebar { position:relative; width:100%; height:auto; } .main { margin-left:0; } }
+</style>
+</head>
+<body>
+<div class="sidebar">
+    <h2>📚 Library Admin</h2>
+    <a href="admin_role.html">Dashboard</a>
+    <a href="Book_Management.html">Manage Books</a>
+    <a href="add_book.html">Add Book (Quick)</a>
+    <a href="Update_Book.html">Update Book</a>
+    <a href="index.html">Logout</a>
+</div>
+<div class="main">
+    <div class="header">
+        <h2>Admin Dashboard Control Hub</h2>
+        <p>Security Privilege: System Administrator Active</p>
+    </div>
+    <div class="grid">
+        <div class="card"><h3>📚 Add New Book Panel</h3><a href="add_book.html">Open Panel</a></div>
+        <div class="card"><h3>📖 Master Book Records</h3><a href="Book_Management.html">Open Table</a></div>
+        <div class="card"><h3>✏ Update Record Logs</h3><a href="Update_Book.html">Open Modification</a></div>
+        <div class="card"><h3>👤 Registered Accounts</h3><a href="signup_page.html">View Form</a></div>
+        <div class="card"><h3>🔐 System Exit Screen</h3><a href="index.html">Go to Login</a></div>
+    </div>
+    <div class="footer">© 2026 Library Management System | Admin Platform Secured</div>
+</div>
+</body>
+</html>
